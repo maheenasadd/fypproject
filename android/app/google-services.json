@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "68583673381",
+    "project_id": "fyplogin-fcdfd",
+    "storage_bucket": "fyplogin-fcdfd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:68583673381:android:7e66c710273a77355c39cc",
+        "android_client_info": {
+          "package_name": "com.mycompany.myapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBVGJqf_dpvjlJJV4PZxd7GiupblmdXJ3w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
