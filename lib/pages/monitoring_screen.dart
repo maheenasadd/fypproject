@@ -1,4 +1,3 @@
-// lib/screens/monitoring_screen.dart
 import 'package:flutter/material.dart';
 import 'package:fyp/constants/constants.dart';
 import 'package:fyp/pages/live_detection.dart';
@@ -34,11 +33,6 @@ class _MonitoringScreenState extends State<MonitoringScreen> {
 
   // Simulate live camera feed logic
   void startLiveCamera() {
-    // setState(() {
-    //   accidentDetected = true; // Simulate accident detection for demo
-    //   numberPlate = null;
-    //   driverDataRetrieved = false;
-    // });
     globalController.accidentDetected.value = false;
     Navigator.push(
       context,
@@ -87,7 +81,18 @@ class _MonitoringScreenState extends State<MonitoringScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Accident Monitoring")),
+      appBar: AppBar(
+        title: Text(
+          "Accident Monitoring",
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        backgroundColor: Colors.redAccent,
+        elevation: 0,
+        centerTitle: true,
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -95,9 +100,19 @@ class _MonitoringScreenState extends State<MonitoringScreen> {
           children: [
             // Video Demo Section at the top
             Container(
-              width: 300,
+              width: double.infinity,
               height: 200,
-              color: Colors.grey[300],
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 10,
+                    spreadRadius: 2,
+                  ),
+                ],
+              ),
               alignment: Alignment.center,
               child: Text(
                 "VIDEO DEMO",
@@ -108,47 +123,42 @@ class _MonitoringScreenState extends State<MonitoringScreen> {
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 30),
+            // Upload Video Button
             SizedBox(
               width: double.infinity,
-              child: Column(
-                children: [
-                  SizedBox(
-                    width: 250,
-                    child: ElevatedButton(
-                      onPressed: uploadVideo,
-                      style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(vertical: 16),
-                        backgroundColor: Colors.redAccent,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                      ),
-                      child: Text(
-                        "Upload Video",
-                        style: TextStyle(fontSize: 18),
-                      ),
-                    ),
+              child: ElevatedButton(
+                onPressed: uploadVideo,
+                style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.symmetric(vertical: 16),
+                  backgroundColor: Colors.redAccent,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
                   ),
-                  SizedBox(height: 20),
-                  SizedBox(
-                    width: 250,
-                    child: ElevatedButton(
-                      onPressed: startLiveCamera,
-                      style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(vertical: 16),
-                        backgroundColor: Colors.redAccent,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                      ),
-                      child: Text(
-                        "Live Camera",
-                        style: TextStyle(fontSize: 18),
-                      ),
-                    ),
+                ),
+                child: Text(
+                  "Upload Video",
+                  style: TextStyle(fontSize: 18, color: Colors.white),
+                ),
+              ),
+            ),
+            SizedBox(height: 20),
+            // Live Camera Button
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: startLiveCamera,
+                style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.symmetric(vertical: 16),
+                  backgroundColor: Colors.redAccent,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
                   ),
-                ],
+                ),
+                child: Text(
+                  "Live Camera",
+                  style: TextStyle(fontSize: 18, color: Colors.white),
+                ),
               ),
             ),
             SizedBox(height: 30),
@@ -159,11 +169,11 @@ class _MonitoringScreenState extends State<MonitoringScreen> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
-                          "Status: Detected",
+                          "Status: Accident Detected",
                           style: TextStyle(
-                            fontSize: 18,
+                            fontSize: 22,
                             fontWeight: FontWeight.bold,
-                            color: Colors.green,
+                            color: Colors.redAccent,
                           ),
                         ),
                         SizedBox(height: 20),
@@ -177,7 +187,10 @@ class _MonitoringScreenState extends State<MonitoringScreen> {
                               borderRadius: BorderRadius.circular(20),
                             ),
                           ),
-                          child: Text("Extract Number Plate"),
+                          child: Text(
+                            "Extract Number Plate",
+                            style: TextStyle(fontSize: 18, color: Colors.white),
+                          ),
                         ),
                         SizedBox(height: 20),
                         if (numberPlate != null) ...[
@@ -200,7 +213,10 @@ class _MonitoringScreenState extends State<MonitoringScreen> {
                                 borderRadius: BorderRadius.circular(20),
                               ),
                             ),
-                            child: Text("Retrieve & Display Data"),
+                            child: Text(
+                              "Retrieve & Display Data",
+                              style: TextStyle(fontSize: 18, color: Colors.white),
+                            ),
                           ),
                           if (driverDataRetrieved)
                             Container(
@@ -211,9 +227,10 @@ class _MonitoringScreenState extends State<MonitoringScreen> {
                                 borderRadius: BorderRadius.circular(16),
                                 boxShadow: [
                                   BoxShadow(
-                                      color: Colors.black12,
-                                      blurRadius: 10,
-                                      spreadRadius: 1),
+                                    color: Colors.black12,
+                                    blurRadius: 10,
+                                    spreadRadius: 1,
+                                  ),
                                 ],
                               ),
                               child: Column(
@@ -224,7 +241,7 @@ class _MonitoringScreenState extends State<MonitoringScreen> {
                                     style: TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
-                                      color: Colors.red,
+                                      color: Colors.redAccent,
                                     ),
                                   ),
                                   SizedBox(height: 10),
@@ -240,7 +257,11 @@ class _MonitoringScreenState extends State<MonitoringScreen> {
                                         borderRadius: BorderRadius.circular(20),
                                       ),
                                     ),
-                                    child: Text("Send SMS to Home"),
+                                    child: Text(
+                                      "Send SMS to Home",
+                                      style: TextStyle(
+                                          fontSize: 18, color: Colors.white),
+                                    ),
                                   ),
                                 ],
                               ),

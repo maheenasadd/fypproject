@@ -4,9 +4,6 @@ import 'package:fyp/components/my_button.dart';
 import 'package:fyp/components/my_textfield.dart';
 import 'package:fyp/components/square_tile.dart';
 import 'package:fyp/services/auth_service.dart';
-//import 'package:modernlogintute/components/my_button.dart';
-//import 'package:modernlogintute/components/my_textfield.dart';
-//import 'package:modernlogintute/components/square_tile';
 
 class LoginPage extends StatefulWidget {
   final Function()? onTap;
@@ -17,14 +14,13 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  // text editing controllers
+  // Text editing controllers
   final emailController = TextEditingController();
-
   final passwordController = TextEditingController();
 
-  // sign user in method
+  // Sign user in method
   void signUserIn() async {
-    //loading circle
+    // Show loading circle
     showDialog(
       context: context,
       builder: (context) {
@@ -39,24 +35,24 @@ class _LoginPageState extends State<LoginPage> {
         email: emailController.text,
         password: passwordController.text,
       );
-      //pop loading circle
+      // Pop loading circle
       Navigator.pop(context);
     } on FirebaseAuthException catch (e) {
-      //pop loading circle
+      // Pop loading circle
       Navigator.pop(context);
 
-      //WRONG EMAIL
+      // Wrong email
       if (e.code == 'user-not-found') {
         wrongEmailMessage();
       }
-      //WRONG PASS
+      // Wrong password
       else if (e.code == 'wrong-password') {
         wrongPasswordMessage();
       }
     }
   }
 
-  //wrong email popup message
+  // Wrong email popup message
   void wrongEmailMessage() {
     showDialog(
       context: context,
@@ -68,7 +64,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  //wrong password popup message
+  // Wrong password popup message
   void wrongPasswordMessage() {
     showDialog(
       context: context,
@@ -83,146 +79,169 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 240, 53, 40),
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const SizedBox(height: 50),
-
-                // logo
-                const Icon(
-                  Icons.lock,
-                  size: 100,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Colors.redAccent, Colors.deepOrangeAccent],
+          ),
+        ),
+        child: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: MediaQuery.of(context).size.height -
+                      MediaQuery.of(context).padding.top -
+                      MediaQuery.of(context).padding.bottom,
                 ),
-
-                const SizedBox(height: 50),
-
-                // welcome back
-                Text(
-                  'Welcome back ',
-                  style: TextStyle(
-                    color: Colors.grey[700],
-                    fontSize: 16,
-                  ),
-                ),
-
-                const SizedBox(height: 25),
-
-                // username textfield
-                MyTextField(
-                  controller: emailController,
-                  hintText: 'Email',
-                  obscureText: false,
-                ),
-
-                const SizedBox(height: 10),
-
-                // password textfield
-                MyTextField(
-                  controller: passwordController,
-                  hintText: 'Password',
-                  obscureText: true,
-                ),
-
-                const SizedBox(height: 10),
-
-                // forgot password?
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Text(
-                        'Forgot Password?',
-                        style: TextStyle(color: Colors.grey[600]),
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 25),
-
-                // sign in button
-                MyButton(
-                  text: "Sign In",
-                  onTap: signUserIn,
-                ),
-
-                const SizedBox(height: 50),
-
-                // or continue with
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Divider(
-                          thickness: 0.5,
-                          color: Colors.grey[400],
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                        child: Text(
-                          'Or continue with',
-                          style: TextStyle(color: Colors.grey[700]),
-                        ),
-                      ),
-                      Expanded(
-                        child: Divider(
-                          thickness: 0.5,
-                          color: Colors.grey[400],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 50),
-
-                // google + apple sign in buttons
-                Row(
+                child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // google button
-                    SquareTile(
-                        onTap: () => AuthService().signInWithGoogle(),
-                        imagePath: 'lib/images/google.png'),
+                    const SizedBox(height: 20),
 
-                    SizedBox(width: 25),
+                    // Logo
+                    const Icon(
+                      Icons.lock,
+                      size: 100,
+                      color: Colors.white,
+                    ),
 
-                    // apple button
-                    SquareTile(onTap: () {}, imagePath: 'lib/images/apple.png')
-                  ],
-                ),
+                    const SizedBox(height: 20),
 
-                const SizedBox(height: 50),
-
-                // not a member? register now
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
+                    // Welcome back
                     Text(
-                      'Not a member?',
-                      style: TextStyle(color: Colors.grey[700]),
-                    ),
-                    const SizedBox(width: 4),
-                    GestureDetector(
-                      onTap: widget.onTap,
-                      child: const Text(
-                        'Register now',
-                        style: TextStyle(
-                          color: Colors.blue,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      'Welcome back!',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
+
+                    const SizedBox(height: 20),
+
+                    // Email textfield
+                    MyTextField(
+                      controller: emailController,
+                      hintText: 'Email',
+                      obscureText: false,
+                    ),
+
+                    const SizedBox(height: 10),
+
+                    // Password textfield
+                    MyTextField(
+                      controller: passwordController,
+                      hintText: 'Password',
+                      obscureText: true,
+                    ),
+
+                    const SizedBox(height: 10),
+
+                    // Forgot password?
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Text(
+                            'Forgot Password?',
+                            style: TextStyle(color: Colors.white.withOpacity(0.8)),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    // Sign in button
+                    MyButton(
+                      text: "Sign In",
+                      onTap: signUserIn,
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    // Or continue with
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Divider(
+                              thickness: 0.5,
+                              color: Colors.white.withOpacity(0.5),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                            child: Text(
+                              'Or continue with',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                          Expanded(
+                            child: Divider(
+                              thickness: 0.5,
+                              color: Colors.white.withOpacity(0.5),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    // Google + Apple sign in buttons
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // Google button
+                        SquareTile(
+                          onTap: () => AuthService().signInWithGoogle(),
+                          imagePath: 'lib/images/google.png',
+                        ),
+
+                        SizedBox(width: 25),
+
+                        // Apple button
+                        SquareTile(
+                          onTap: () {},
+                          imagePath: 'lib/images/apple.png',
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    // Not a member? Register now
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Not a member?',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        const SizedBox(width: 4),
+                        GestureDetector(
+                          onTap: widget.onTap,
+                          child: const Text(
+                            'Register now',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 20), // Extra padding at the bottom
                   ],
-                )
-              ],
+                ),
+              ),
             ),
           ),
         ),

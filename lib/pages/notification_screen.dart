@@ -4,22 +4,23 @@ class NotificationScreen extends StatelessWidget {
   // Dummy data for multiple notifications
   final List<Map<String, String>> notifications = [
     {
-      "location": "HSR Layout",
+      "location": "Faizabad",
       "time": "10:35 AM, 12 Oct 2023",
       "user": "John Doe",
     },
     {
-      "location": "Koramangala",
+      "location": "Pindi Mor",
       "time": "1:20 PM, 15 Oct 2023",
       "user": "Jane Smith",
     },
     {
-      "location": "Whitefield",
+      "location": "Park Road",
       "time": "5:50 PM, 18 Oct 2023",
       "user": "Mike Johnson",
     },
   ];
 
+  // Function to send SMS notification
   void sendSmsNotification(BuildContext context) {
     showDialog(
       context: context,
@@ -55,7 +56,16 @@ class NotificationScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Notification Details"),
+        title: Text(
+          "Notifications",
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        backgroundColor: Colors.redAccent,
+        elevation: 0,
+        centerTitle: true,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -80,25 +90,29 @@ class NotificationScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Notification Title
                   Text(
                     "Accident Detected by ${notification['user']}",
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Colors.red,
+                      color: Colors.redAccent,
                     ),
                   ),
                   SizedBox(height: 16),
+                  // Location
                   Text(
-                    "Location: ${notification['location']}",
-                    style: TextStyle(fontSize: 18),
+                    notification['location']!,
+                    style: TextStyle(fontSize: 16, color: Colors.grey[800]),
                   ),
                   SizedBox(height: 8),
+                  // Time
                   Text(
-                    "Time: ${notification['time']}",
-                    style: TextStyle(fontSize: 18),
+                    notification['time']!,
+                    style: TextStyle(fontSize: 16, color: Colors.grey[800]),
                   ),
-                  SizedBox(height: 32),
+                  SizedBox(height: 16),
+                  // Send SMS Button
                   ElevatedButton(
                     onPressed: () => sendSmsNotification(context),
                     style: ElevatedButton.styleFrom(

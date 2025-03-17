@@ -6,11 +6,25 @@ import 'monitoring_screen.dart';
 import 'history_screen.dart';
 import 'notification_screen.dart';
 import '../components/wave_clipper.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:async';
+import 'dart:io'; // Import for File class
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   HomeScreen({super.key});
 
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
   final user = FirebaseAuth.instance.currentUser!;
+  bool _monitoring = false;
+  String? _alert;
+  int _step = 0; // 0 for Splash, 1 for Monitoring
+  bool _showSettings = false;
+  final ImagePicker _picker = ImagePicker();
+  XFile? _videoFile;
 
   // Sign out method
   void signUserOut(BuildContext context) async {
@@ -18,145 +32,293 @@ class HomeScreen extends StatelessWidget {
     Navigator.pushReplacementNamed(context, '/login');
   }
 
+  void _handleStartMonitoring() async {
+    setState(() {
+      _monitoring = true;
+      _alert = null;
+      _step = 1;
+    });
+
+    // Simulate accident detection
+    await Future.delayed(Duration(seconds: 5), () {
+      setState(() {
+        _alert = 'Accident Detected! Notifying Emergency Services...';
+        _step = 2;
+      });
+    });
+  }
+
+  void _handleStopMonitoring() {
+    setState(() {
+      _monitoring = false;
+      _alert = null;
+      _step = 1;
+      _videoFile = null;
+    });
+  }
+
+  void _handleSettingsToggle() {
+    setState(() {
+      _showSettings = !_showSettings;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: Colors.grey[50],
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        title: Text('Maheen', style: TextStyle(fontWeight: FontWeight.bold)),
+        elevation: 0,
+        title: Text(
+          'AlertX',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+            fontSize: 26,
+          ),
+        ),
         actions: [
           IconButton(
-            icon: Icon(Icons.logout),
+            icon: Icon(Icons.logout, color: Colors.white),
             onPressed: () => signUserOut(context),
           ),
         ],
-        flexibleSpace: ClipPath(
-          clipper: WaveClipper(),
-          child: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Colors.redAccent.withOpacity(0.8), Colors.white],
-              ),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Colors.redAccent, Colors.deepOrangeAccent],
             ),
           ),
         ),
         centerTitle: true,
-        elevation: 0,
       ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              Center(
-                child: Text(
-                  "Logged in as ${user.email!}",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              SizedBox(height: 20),
+              // Welcome Message
+              Text(
+                "Welcome, ${user.email!}",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey[800],
                 ),
               ),
-              SizedBox(height: 60),
-              // Emergency Monitoring Container
+              SizedBox(height: 40),
+              // Emergency Monitoring Section
               Container(
                 width: double.infinity,
-                padding: EdgeInsets.all(20.0),
+                padding: EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 228, 126, 126),
-                  borderRadius: BorderRadius.circular(30),
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [Colors.redAccent, Colors.deepOrangeAccent],
+                  ),
+                  borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
-                        color: Colors.black12, blurRadius: 10, spreadRadius: 1),
+                      color: Colors.redAccent.withOpacity(0.3),
+                      blurRadius: 15,
+                      spreadRadius: 5,
+                    ),
                   ],
                 ),
                 child: Column(
                   children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        // Navigate to Monitoring Screen
-                        globalController.accidentDetected.value = false;
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => MonitoringScreen()),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            const Color.fromARGB(255, 226, 225, 225),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                      ),
-                      child: Text(
-                        "Tap to Start Monitoring",
-                        style: TextStyle(
-                            color: const Color.fromARGB(255, 188, 25, 25)),
+                    Text(
+                      "Emergency Monitoring",
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
                       ),
                     ),
-                    SizedBox(height: 46),
-                    ElevatedButton(
-                      onPressed: () {
-                        // Add logic to handle accident reporting
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                              content: Text("Emergency services notified")),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            const Color.fromARGB(255, 224, 222, 222),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
+                    SizedBox(height: 20),
+                    AnimatedContainer(
+                      duration: Duration(milliseconds: 500),
+                      curve: Curves.easeInOut,
+                      width: double.infinity,
+                      height: 200,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: _monitoring
+                          ? _videoFile != null
+                              ? ClipRRect(
+                                  borderRadius: BorderRadius.circular(16),
+                                  child: Image.file(
+                                    File(_videoFile!.path),
+                                    fit: BoxFit.cover,
+                                  ),
+                                )
+                              : Center(
+                                  child: Text(
+                                    'Camera Feed Not Active',
+                                    style: TextStyle(
+                                      color: Colors.grey[600],
+                                    ),
+                                  ),
+                                )
+                          : Center(
+                              child: Text(
+                                'Camera Feed Not Active',
+                                style: TextStyle(
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                            ),
+                    ),
+                    if (_alert != null)
+                      Container(
+                        margin: EdgeInsets.symmetric(vertical: 16),
+                        padding: EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Text(
+                          _alert!,
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
                         ),
                       ),
-                      child: Text("Accident Handled"),
+                    if (_step == 2)
+                      Container(
+                        margin: EdgeInsets.symmetric(vertical: 16),
+                        padding: EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.orange,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Column(
+                          children: [
+                            Text(
+                              'Number Plate Detected! Retrieving Driver Information...',
+                              style: TextStyle(
+                                color: Colors.white,
+                              ),
+                            ),
+                            SizedBox(height: 16),
+                            ElevatedButton(
+                              onPressed: () {
+                                setState(() {
+                                  _step = 3;
+                                });
+                              },
+                              child: Text('Proceed'),
+                            ),
+                          ],
+                        ),
+                      ),
+                    if (_step == 3)
+                      Container(
+                        margin: EdgeInsets.symmetric(vertical: 16),
+                        padding: EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.blue,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Column(
+                          children: [
+                            Text(
+                              'Sending SMS to Family and Emergency Services...',
+                              style: TextStyle(
+                                color: Colors.white,
+                              ),
+                            ),
+                            SizedBox(height: 16),
+                            ElevatedButton(
+                              onPressed: () {
+                                setState(() {
+                                  _step = 4;
+                                });
+                              },
+                              child: Text('Next'),
+                            ),
+                          ],
+                        ),
+                      ),
+                    if (_step == 4)
+                      Container(
+                        margin: EdgeInsets.symmetric(vertical: 16),
+                        padding: EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.green,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Text(
+                          'Ambulance Dispatched! Tracking the Route...',
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        ElevatedButton(
+                          onPressed: _handleStartMonitoring,
+                          child: Text('Start Monitoring'),
+                        ),
+                        ElevatedButton(
+                          onPressed: _handleStopMonitoring,
+                          child: Text('Stop Monitoring'),
+                        ),
+                      ],
                     ),
                   ],
                 ),
               ),
-              SizedBox(height: 80),
-              // Circle Buttons for Navigation
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+              SizedBox(height: 40),
+              // Quick Actions Section
+              Text(
+                "Quick Actions",
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey[800],
+                ),
+              ),
+              SizedBox(height: 20),
+              GridView.count(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                crossAxisCount: 2,
+                crossAxisSpacing: 20,
+                mainAxisSpacing: 20,
                 children: [
-                  Column(
-                    children: [
-                      CircleAvatar(
-                        radius: 30,
-                        backgroundColor: Colors.blue,
-                        child: IconButton(
-                          icon: Icon(Icons.show_chart, color: Colors.white),
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (_) => HistoryScreen()));
-                          },
-                        ),
-                      ),
-                      SizedBox(height: 8),
-                      Text("History", style: TextStyle(fontSize: 16)),
-                    ],
+                  _buildQuickActionCard(
+                    icon: Icons.show_chart,
+                    label: "History",
+                    color: Colors.blueAccent,
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => HistoryScreen()),
+                      );
+                    },
                   ),
-                  Column(
-                    children: [
-                      CircleAvatar(
-                        radius: 30,
-                        backgroundColor: Colors.green,
-                        child: IconButton(
-                          icon: Icon(Icons.notifications, color: Colors.white),
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (_) => NotificationScreen()));
-                          },
-                        ),
-                      ),
-                      SizedBox(height: 8),
-                      Text("Notifications", style: TextStyle(fontSize: 16)),
-                    ],
+                  _buildQuickActionCard(
+                    icon: Icons.notifications,
+                    label: "Notifications",
+                    color: Colors.greenAccent,
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => NotificationScreen()),
+                      );
+                    },
                   ),
                 ],
               ),
@@ -165,26 +327,79 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
       // Bottom Navigation Bar
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.white,
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home, color: Colors.blue),
-            label: 'Home',
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 10,
+              spreadRadius: 5,
+            ),
+          ],
+        ),
+        child: BottomAppBar(
+          color: Colors.white,
+          elevation: 0,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              IconButton(
+                icon: Icon(Icons.home, color: Colors.redAccent),
+                onPressed: () {},
+              ),
+              IconButton(
+                icon: Icon(Icons.history, color: Colors.grey),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => HistoryScreen()),
+                  );
+                },
+              ),
+            ],
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.history, color: Colors.grey),
-            label: 'Accident History',
+        ),
+      ),
+    );
+  }
+
+  // Helper method to build quick action cards
+  Widget _buildQuickActionCard({
+    required IconData icon,
+    required String label,
+    required Color color,
+    required VoidCallback onPressed,
+  }) {
+    return Card(
+      elevation: 5,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: onPressed,
+        child: Container(
+          padding: EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(20),
           ),
-        ],
-        currentIndex: 0,
-        type: BottomNavigationBarType.fixed,
-        onTap: (index) {
-          if (index == 1) {
-            Navigator.push(
-                context, MaterialPageRoute(builder: (_) => HistoryScreen()));
-          }
-        },
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 40, color: color),
+              SizedBox(height: 10),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey[800],
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
