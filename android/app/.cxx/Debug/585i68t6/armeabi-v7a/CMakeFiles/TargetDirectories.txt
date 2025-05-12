@@ -1,0 +1,2 @@
+/Users/imacslim2015/Desktop/fypproject/android/app/.cxx/Debug/585i68t6/armeabi-v7a/CMakeFiles/edit_cache.dir
+/Users/imacslim2015/Desktop/fypproject/android/app/.cxx/Debug/585i68t6/armeabi-v7a/CMakeFiles/rebuild_cache.dir
